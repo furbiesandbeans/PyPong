@@ -451,7 +451,7 @@ def main():
 		
 	#Two player game mode
 	else:
-		sprites = pygame.sprite.RenderPlain((ball,player1, player2,powerup))
+		sprites = pygame.sprite.RenderPlain((ball,player1, player2))
 		while not GAME_ENDED:
 			clock.tick(60)
 			for event in pygame.event.get():
