@@ -183,12 +183,19 @@ class Player(pygame.sprite.Sprite):
 		if newpos.top > 0 and newpos.bottom < WHEIGHT:
 			self.rect = newpos
 
-"""
 class PowerUp(pygame.sprite.Sprite):
 	def __init__(self):
 		pygame.sprite.Sprite.__init__(self)
 		self.image, self.rect = load_image('powerup.bmp', GREEN)
-"""
+		self.alive = 0
+
+	def set(self):
+		self.rect.topleft = WWIDTH/2, random.randint(WWIDTH/4,WWIDTH/2)
+
+	def update(self):
+		if self.alive is 0:
+			self.alive = 1
+			self.set()
 
 class Fireball(pygame.sprite.Sprite):
 	def __init__(self):
@@ -307,6 +314,10 @@ def main():
 	ball = Ball()
 	ball.setSpeed(ballSpeed)
 	
+	#Loading Powerup
+	global powerup
+	powerup = PowerUp()
+
 	#Loading Players
 	global player1
 	player1 = Player()
@@ -369,7 +380,7 @@ def main():
 		
 	#One player game mode
 	if numOfPlayers == 1:
-		sprites = pygame.sprite.RenderPlain((ball, player1))
+		sprites = pygame.sprite.RenderPlain((ball, player1, powerup))
 		bossSprite = pygame.sprite.RenderPlain((boss))
 		upKey = 0
 		downKey = 0
@@ -403,7 +414,12 @@ def main():
 				ball.setSpeed(ballSpeed)
 				ball.collided()
 				ping_sound.play()
-			
+
+			#Slow down boss speed on powerup hit
+			if ball.rect.colliderect(powerup.rect):
+				powerup.alive = 0
+				boss.speed = 3
+
 			#Update score and print it out
 			score += 1
 			printText('Score: %d' % score, windowSurface, RED, WWIDTH - 100, 25, 0)
@@ -435,7 +451,7 @@ def main():
 		
 	#Two player game mode
 	else:
-		sprites = pygame.sprite.RenderPlain((ball,player1, player2))
+		sprites = pygame.sprite.RenderPlain((ball,player1, player2,powerup))
 		while not GAME_ENDED:
 			clock.tick(60)
 			for event in pygame.event.get():
